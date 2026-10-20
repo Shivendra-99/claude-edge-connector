@@ -61,7 +61,9 @@ Developer tools (alternative: Productivity)
 ## Assets
 
 - Logo (300×300): `store/logo-300.png`
-- Screenshots (1280×800): take these on a real machine: the popup with a shared tab, and Claude Desktop working in Edge side by side.
+- Screenshot (1280×800): `store/screenshot-1.png`
+- Small promotional tile (440×280): `store/promo-small-440x280.png`
+- Large promotional tile (1400×560): `store/promo-large-1400x560.png`
 
 ## Privacy policy URL
 
