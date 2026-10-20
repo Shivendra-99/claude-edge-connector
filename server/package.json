@@ -1,0 +1,44 @@
+{
+  "name": "claude-edge-connector",
+  "version": "0.1.0",
+  "description": "MCP server for Claude Connector: let Claude and other MCP clients control the Microsoft Edge tabs you share.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "microsoft-edge",
+    "browser-automation",
+    "claude",
+    "ai-agent"
+  ],
+  "homepage": "https://github.com/Shivendra-99/claude-edge-connector#readme",
+  "bugs": {
+    "url": "https://github.com/Shivendra-99/claude-edge-connector/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shivendra-99/claude-edge-connector.git"
+  },
+  "license": "MIT",
+  "author": "Shivendra-99",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "claude-edge-connector": "src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.20"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "ws": "^8.22.0",
+    "zod": "^4.6.7"
+  }
+}

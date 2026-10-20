@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Claude Connector for Edge",
+  "short_name": "Claude Connector",
+  "version": "0.1.0",
+  "description": "Unofficial open-source connector: let Claude and other MCP apps read and act in the Edge tabs you choose. Runs locally.",
+  "minimum_chrome_version": "116",
+  "permissions": ["debugger", "tabs", "tabGroups", "storage", "alarms"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Claude Connector",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
+}

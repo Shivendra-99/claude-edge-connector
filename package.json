@@ -1,0 +1,17 @@
+{
+  "name": "claude-edge-connector-monorepo",
+  "private": true,
+  "description": "Claude Connector: let Claude and other MCP clients use your Microsoft Edge tabs.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test --test-timeout=90000 test/actions.test.mjs test/server.test.mjs test/e2e.test.mjs",
+    "pack": "node scripts/pack-extension.mjs",
+    "icons": "python3 scripts/make-icons.py"
+  },
+  "devDependencies": {
+    "playwright": "1.56.0"
+  },
+  "workspaces": [
+    "server"
+  ]
+}

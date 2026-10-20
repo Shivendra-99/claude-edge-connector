@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Connector test form</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    .card { cursor: pointer; padding: 10px; border: 1px solid #ccc; width: 200px; }
+    .card span { display: block; }
+    .hidden { display: none; }
+    .styled-check { position: absolute; opacity: 0; width: 0; height: 0; }
+    .spacer { height: 2500px; }
+  </style>
+</head>
+<body>
+  <h1>Checkout</h1>
+  <p>Fill in the form below and press Place order.</p>
+  <a href="/page2.html" id="next">Go to page two</a>
+
+  <form id="f" onsubmit="event.preventDefault(); document.getElementById('result').textContent = 'Submitted: ' + document.getElementById('email').value + ' / ' + document.getElementById('country').value + ' / ' + document.getElementById('terms').checked;">
+    <label for="email">Email address</label>
+    <input id="email" type="email" placeholder="you@example.com">
+    <label for="pw">Password</label>
+    <input id="pw" type="password" value="secret123">
+    <label><input id="terms" type="checkbox"> I accept the terms</label>
+    <label for="country">Country</label>
+    <select id="country">
+      <option value="">Choose…</option>
+      <option value="in">India</option>
+      <option value="us">United States</option>
+    </select>
+    <textarea id="notes" aria-label="Order notes"></textarea>
+    <button type="submit">Place order</button>
+  </form>
+
+  <div id="editor" contenteditable="true" aria-label="Rich editor">old text</div>
+  <div class="card" id="card"><span>Plan: Pro</span><span>₹499 / month</span></div>
+  <label><input type="checkbox" class="styled-check" id="fancy"> Fancy toggle</label>
+  <div class="hidden"><button>Invisible button</button></div>
+  <div id="shadow-host"></div>
+  <iframe id="same" srcdoc="<button onclick='parent.document.getElementById(&quot;result&quot;).textContent=&quot;iframe clicked&quot;'>Inside iframe</button>" style="width:300px;height:60px"></iframe>
+  <iframe id="sandboxed" sandbox srcdoc="<p>secret</p>" style="width:300px;height:40px"></iframe>
+  <p id="result">Nothing yet</p>
+  <p id="keys"></p>
+  <div class="spacer"></div>
+  <p>Bottom of the page</p>
+
+  <script>
+    document.getElementById('card').addEventListener('click', () => {
+      document.getElementById('result').textContent = 'Card clicked';
+    });
+    document.getElementById('fancy').addEventListener('change', (e) => {
+      document.getElementById('result').textContent = 'Fancy is ' + e.target.checked;
+    });
+    const root = document.getElementById('shadow-host').attachShadow({ mode: 'open' });
+    root.innerHTML = '<button id="sb">Shadow button</button>';
+    root.getElementById('sb').addEventListener('click', () => {
+      document.getElementById('result').textContent = 'Shadow clicked';
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'k') document.getElementById('keys').textContent = 'ctrl+k pressed';
+      if (e.key === 'Escape') document.getElementById('keys').textContent = 'escape pressed';
+    });
+  </script>
+</body>
+</html>

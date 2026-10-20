@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Claude Connector</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icons/icon-48.png" alt="" width="28" height="28">
+    <div>
+      <h1>Claude Connector</h1>
+      <p class="status" id="status"><span class="dot"></span><span id="statusText">Checking…</span></p>
+    </div>
+  </header>
+
+  <section class="card" id="current">
+    <div class="tabinfo">
+      <img id="curIcon" alt="" width="16" height="16">
+      <div class="tabtext">
+        <div id="curTitle" class="title"></div>
+        <div id="curUrl" class="url"></div>
+      </div>
+    </div>
+    <button id="toggle" class="primary">Let AI use this tab</button>
+    <p id="curNote" class="note"></p>
+  </section>
+
+  <section>
+    <div class="row">
+      <h2>Tabs the AI can use</h2>
+      <button id="stopAll" class="link danger">Stop all</button>
+    </div>
+    <ul id="sharedList"></ul>
+    <p id="emptyShared" class="note">None yet.</p>
+  </section>
+
+  <details id="settingsBox">
+    <summary>Settings</summary>
+    <label class="check"><input type="checkbox" id="allowOpen"> Let AI open new tabs</label>
+    <label class="check"><input type="checkbox" id="groupTabs"> Put AI tabs in a "Claude" tab group</label>
+    <label class="check"><input type="checkbox" id="showOverlay"> Show Claude's cursor and glow on the page</label>
+    <label for="blocked">Never allow on these sites
+      <span class="hint">One domain per line, e.g. mybank.com</span>
+    </label>
+    <textarea id="blocked" rows="3" spellcheck="false"></textarea>
+    <label for="port">Port <span class="hint">Must match EDGE_CONNECTOR_PORT on the server</span></label>
+    <input id="port" type="number" min="1024" max="65535">
+    <div class="row">
+      <button id="save">Save</button>
+      <span id="saved" class="hint"></span>
+    </div>
+  </details>
+
+  <footer>Sends nothing anywhere itself: page content goes only to the AI app you connected.<br>Unofficial open-source project, not made by Anthropic.</footer>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
