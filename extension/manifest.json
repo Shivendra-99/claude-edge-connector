@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Claude Connector for Edge",
-  "short_name": "Claude Connector",
+  "short_name": "Claude Edge",
   "version": "0.1.0",
   "description": "Unofficial open-source connector: let Claude and other MCP apps read and act in the Edge tabs you choose. Runs locally.",
   "minimum_chrome_version": "116",
