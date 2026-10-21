@@ -1,5 +1,10 @@
 # Claude Connector for Edge
 
+[![npm version](https://img.shields.io/npm/v/claude-edge-connector.svg?style=flat-square&color=cb3837)](https://www.npmjs.com/package/claude-edge-connector)
+[![npm downloads](https://img.shields.io/npm/dm/claude-edge-connector.svg?style=flat-square)](https://www.npmjs.com/package/claude-edge-connector)
+[![GitHub release](https://img.shields.io/github/v/release/Shivendra-99/claude-edge-connector?style=flat-square&color=blue)](https://github.com/Shivendra-99/claude-edge-connector/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE)
+
 **Let Claude (or any MCP app) use your Microsoft Edge tabs.** It works in your real browser with your logins, and only in the tabs you choose.
 
 Claude Connector is an Edge extension plus a small local server. Your AI app talks to the server over [MCP](https://modelcontextprotocol.io); the server passes commands to the extension, which reads and controls the tabs you've shared. It works with Claude Desktop, Claude Code, Cursor, VS Code and any other MCP client.
