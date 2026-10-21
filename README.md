@@ -1,7 +1,7 @@
 # Claude Connector for Edge
 
 [![npm version](https://img.shields.io/npm/v/claude-edge-connector.svg?style=flat-square&color=cb3837)](https://www.npmjs.com/package/claude-edge-connector)
-[![npm downloads](https://img.shields.io/npm/dm/claude-edge-connector.svg?style=flat-square)](https://www.npmjs.com/package/claude-edge-connector)
+[![node version](https://img.shields.io/node/v/claude-edge-connector.svg?style=flat-square)](https://www.npmjs.com/package/claude-edge-connector)
 [![GitHub release](https://img.shields.io/github/v/release/Shivendra-99/claude-edge-connector?style=flat-square&color=blue)](https://github.com/Shivendra-99/claude-edge-connector/releases/latest)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE)
 
