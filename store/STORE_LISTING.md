@@ -16,10 +16,10 @@ Unofficial, open-source connector. Not made, endorsed or supported by Anthropic.
 
 Claude Connector lets AI apps like Claude Desktop, Claude Code, Cursor and VS Code use your Microsoft Edge browser: reading pages, clicking, typing and filling in forms, in your real browser with your existing logins.
 
-You can always see what Claude is doing:
-• Tabs Claude can use go into an orange "Claude" tab group.
-• While Claude works in a tab, the page glows and an animated cursor shows where Claude is clicking and typing.
-• A "Claude is working in this tab" pill with a Stop button sits at the bottom of the page.
+You can always see which AI is doing what, labelled with the app's name (Claude, Gemini CLI, Cursor, GitHub Copilot, …):
+• Tabs the AI can use go into an orange tab group named after the app.
+• While the AI works in a tab, the page glows and an animated cursor shows where it is clicking and typing.
+• A "Claude Code is working in this tab" pill (with the name of whichever app is acting) and a Stop button sits at the bottom of the page.
 
 You stay in control:
 • The AI can only use tabs you share (click the Claude Connector icon → "Let AI use this tab"), plus tabs it opens itself, which you can turn off.
@@ -75,7 +75,7 @@ https://github.com/Shivendra-99/claude-edge-connector/blob/main/PRIVACY.md
 
 **tabs**: To list shared tabs with their titles and URLs, open new tabs when the user's AI app asks for one, close tabs, and enforce the user's blocked-site list.
 
-**tabGroups**: To put the tabs the AI can use into a clearly labelled "Claude" tab group, so the user can always see which tabs the AI has access to and when it is working. Tabs already in the user's own groups are never moved. Can be turned off in settings.
+**tabGroups**: To put the tabs the AI can use into a clearly labelled tab group named after the AI app, so the user can always see which tabs the AI has access to and when it is working. Tabs already in the user's own groups are never moved. Can be turned off in settings.
 
 **storage**: To save the user's settings (port, blocked sites, whether the AI may open tabs, overlay and tab-group switches) and to remember which tabs are shared while the browser is open.
 

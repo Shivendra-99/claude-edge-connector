@@ -89,9 +89,9 @@ It should print `OK: connected to Microsoft Edge …`. The extension popup also 
 
 - **Share a tab:** click the Claude Connector icon and choose **Let AI use this tab**. The icon shows an **AI** badge on shared tabs.
 - **Or just ask:** "Open flipkart.com and find phone covers under ₹500." The AI can open its own tabs (you can turn this off in the extension's settings).
-- **See what Claude is doing:**
-  - Tabs Claude can use sit in an orange **Claude** tab group. Its title changes to **Claude · working** while Claude is acting in one of them.
-  - While Claude works in a tab, the page gets a soft orange glow, an animated cursor that moves to whatever Claude clicks or types into, and a **Claude is working in this tab** pill at the bottom.
+- **See what the AI is doing:** everything is labelled with the name of the AI app that is acting (Claude Desktop, Claude Code, Gemini CLI, Cursor, GitHub Copilot, …).
+  - Tabs the AI can use sit in an orange tab group named after the app, for example **Gemini CLI**. Its title changes to **Gemini CLI · working** while the app is acting in one of them.
+  - While the AI works in a tab, the page gets a soft orange glow, an animated cursor that moves to whatever it clicks or types into, and a **Gemini CLI is working in this tab** pill at the bottom.
   - The cursor, glow and pill are never shown to the AI: they're left out of page outlines, and hidden while it takes screenshots. You can turn them, or the tab group, off in Settings.
   - Tabs that are already in one of your own groups stay where they are.
 - **Stop:** click **Stop** on the pill in the page, **Stop** next to a tab in the popup, **Stop all**, or press **Cancel** on Edge's "Claude Connector for Edge started debugging this browser" bar.

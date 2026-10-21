@@ -11,9 +11,13 @@ import { registerTools } from './tools.js';
 const pkg = createRequire(import.meta.url)('../package.json');
 const DEFAULT_PORT = 18765;
 
+// MCP clientInfo.name -> what the user sees. Unlisted clients show their own name.
 const FRIENDLY_CLIENT_NAMES = {
   'claude-ai': 'Claude Desktop',
   'claude-code': 'Claude Code',
+  'gemini-cli-mcp-client': 'Gemini CLI',
+  'cursor-vscode': 'Cursor',
+  'Visual Studio Code': 'GitHub Copilot', // VS Code's own MCP client is used by Copilot chat
 };
 
 function parseArgs(argv) {

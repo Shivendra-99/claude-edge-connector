@@ -119,6 +119,7 @@ test('tools round-trip through the bridge to the extension', async () => {
     assert.match(clicked, /Clicked ref 3\./);
     assert.match(clicked, /untrusted web data/, 'page content is labelled untrusted');
     assert.deepEqual(ext.requests.at(-1).params, { tabId: 7, ref: 3 }, 'snake_case args become camelCase params');
+    assert.equal(ext.requests.at(-1).client, 'Claude Desktop', 'each request names the AI app it comes from');
 
     const shot = await client.callTool({ name: 'browser_screenshot', arguments: {} });
     assert.equal(shot.content[0].type, 'image');
@@ -185,14 +186,15 @@ test('EDGE_CONNECTOR_EXTENSION_IDS locks the server to specific extensions', asy
 test('a second MCP client relays through the first, and takes over when it exits', async () => {
   const port = await freePort();
   const first = await startClient(port, 'claude-ai');
-  const second = await startClient(port, 'claude-code');
+  const second = await startClient(port, 'gemini-cli-mcp-client');
   try {
     let ext = await fakeExtension(port, handlers);
-    await until(() => ext.clients.includes('Claude Desktop') && ext.clients.includes('Claude Code'));
+    await until(() => ext.clients.includes('Claude Desktop') && ext.clients.includes('Gemini CLI'));
 
     const viaPeer = await second.callTool({ name: 'browser_snapshot', arguments: {} });
     assert.equal(viaPeer.isError, undefined, text(viaPeer));
     assert.match(text(viaPeer), /\[1\] button "Compose"/);
+    assert.equal(ext.requests.at(-1).client, 'Gemini CLI', 'relayed requests name the app that sent them, not the hub app');
 
     // The hub (first client) quits. The second process should take the port.
     await first.close();
@@ -207,7 +209,8 @@ test('a second MCP client relays through the first, and takes over when it exits
     }, 8000);
     const afterTakeover = await second.callTool({ name: 'browser_snapshot', arguments: {} });
     assert.match(text(afterTakeover), /\[1\] button "Compose"/);
-    await until(() => ext.clients.includes('Claude Code'));
+    assert.equal(ext.requests.at(-1).client, 'Gemini CLI');
+    await until(() => ext.clients.includes('Gemini CLI'));
     ext.ws.close();
   } finally {
     await second.close();

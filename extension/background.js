@@ -9,13 +9,12 @@ import * as overlay from './overlay.js';
 
 // idleSeconds: release the debugger this long after the AI's last action on a tab,
 // so Edge's "started debugging this browser" bar only shows while the AI is working.
-// showOverlay: glow + cursor + "Claude is working" pill on the page while working.
-// groupTabs: put tabs the AI can use into an orange "Claude" tab group.
+// showOverlay: glow + cursor + "<AI app> is working" pill on the page while working.
+// groupTabs: put tabs the AI can use into an orange tab group named after the AI app.
 const DEFAULTS = {
   port: 18765, allowOpenTabs: true, blockedSites: [], idleSeconds: 30, showOverlay: true, groupTabs: true,
 };
-const GROUP_TITLE = 'Claude';
-const OVERLAY_LABEL = 'Claude is working in this tab';
+const UNKNOWN_AI = 'AI'; // shown until we know which AI app is using a tab
 const SNAPSHOT_CHARS = 20000;
 
 let settings = { ...DEFAULTS };
@@ -24,8 +23,9 @@ const attached = new Set(); // tab ids with our debugger attached
 const busy = new Map(); // tab id -> number of requests in progress
 const idleTimers = new Map(); // tab id -> pending idle-release timer
 const lastCursor = new Map(); // tab id -> last on-page cursor position
-const groupedByUs = new Set(); // tab ids we moved into a "Claude" group
-let ourGroups = {}; // window id -> id of our "Claude" tab group
+const tabClient = new Map(); // tab id -> name of the AI app that last acted in it (e.g. "Gemini CLI")
+const groupedByUs = new Set(); // tab ids we moved into our AI tab group
+let ourGroups = {}; // window id -> id of our AI tab group
 let lastTabId = null;
 
 let ws = null;
@@ -44,10 +44,11 @@ const ready = init();
 
 async function init() {
   settings = { ...DEFAULTS, ...(await chrome.storage.local.get(DEFAULTS)) };
-  const saved = await chrome.storage.session.get({ shared: [], lastTabId: null, groupedByUs: [], ourGroups: {} });
+  const saved = await chrome.storage.session.get({ shared: [], lastTabId: null, groupedByUs: [], ourGroups: {}, tabClient: {} });
   const alive = new Set((await chrome.tabs.query({})).map((t) => t.id));
   for (const id of saved.shared) if (alive.has(id)) shared.add(id);
   for (const id of saved.groupedByUs) if (alive.has(id)) groupedByUs.add(id);
+  for (const [id, name] of Object.entries(saved.tabClient)) if (alive.has(Number(id))) tabClient.set(Number(id), name);
   ourGroups = saved.ourGroups || {};
   lastTabId = alive.has(saved.lastTabId) ? saved.lastTabId : null;
   for (const id of shared) {
@@ -61,7 +62,17 @@ async function init() {
 }
 
 async function persist() {
-  await chrome.storage.session.set({ shared: [...shared], lastTabId, groupedByUs: [...groupedByUs], ourGroups });
+  await chrome.storage.session.set({
+    shared: [...shared], lastTabId, groupedByUs: [...groupedByUs], ourGroups, tabClient: Object.fromEntries(tabClient),
+  });
+}
+
+/** Remember which AI app is acting in a tab, so the page and tab group can name it. */
+function setTabClient(tabId, name) {
+  if (!name || tabClient.get(tabId) === name) return;
+  tabClient.set(tabId, name);
+  persist();
+  updateGroupTitles();
 }
 
 function browserName() {
@@ -136,7 +147,7 @@ async function onServerMessage(raw) {
     await ready;
     const handler = handlers[msg.method];
     if (!handler) throw new Error(`Unknown method: ${msg.method}`);
-    const result = await handler(msg.params || {});
+    const result = await handler({ ...msg.params, client: msg.client });
     sendToServer({ type: 'response', id: msg.id, result });
   } catch (e) {
     sendToServer({ type: 'response', id: msg.id, error: { message: e?.message || String(e) } });
@@ -236,7 +247,7 @@ async function releaseTab(tabId) {
 
 function overlayOpts(tabId) {
   const idle = Math.max(1, Number(settings.idleSeconds) || DEFAULTS.idleSeconds);
-  return { ttlMs: (idle + 5) * 1000, cursor: lastCursor.get(tabId), label: OVERLAY_LABEL };
+  return { ttlMs: (idle + 5) * 1000, cursor: lastCursor.get(tabId), label: `${tabClient.get(tabId) || UNKNOWN_AI} is working in this tab` };
 }
 
 async function refreshOverlay(tabId, send, op = 'show') {
@@ -253,7 +264,7 @@ function cursorHook(tabId, send) {
   };
 }
 
-// ---- "Claude" tab group -----------------------------------------------------
+// ---- AI tab group (titled with the AI app's name) ---------------------------
 
 async function groupTab(tabId) {
   if (!settings.groupTabs || !chrome.tabGroups) return;
@@ -271,7 +282,7 @@ async function groupTab(tabId) {
     } else {
       groupId = await chrome.tabs.group({ tabIds: [tabId], createProperties: { windowId: tab.windowId } });
       ourGroups[tab.windowId] = groupId;
-      await chrome.tabGroups.update(groupId, { title: GROUP_TITLE, color: 'orange' });
+      await chrome.tabGroups.update(groupId, { title: tabClient.get(tabId) || UNKNOWN_AI, color: 'orange' });
     }
     groupedByUs.add(tabId);
   } catch {
@@ -299,7 +310,11 @@ function updateGroupTitles() {
     for (const [windowId, groupId] of Object.entries(ourGroups)) {
       try {
         const tabs = await chrome.tabs.query({ groupId });
-        const title = tabs.some((t) => attached.has(t.id)) ? `${GROUP_TITLE} · working` : GROUP_TITLE;
+        const working = tabs.filter((t) => attached.has(t.id));
+        // Name whoever is working right now; when idle, whoever used these tabs last.
+        const names = [...new Set((working.length ? working : tabs).map((t) => tabClient.get(t.id)).filter(Boolean))];
+        const who = names.join(' + ') || UNKNOWN_AI;
+        const title = working.length ? `${who} · working` : who;
         const group = await chrome.tabGroups.get(groupId);
         if (group.title !== title) await chrome.tabGroups.update(groupId, { title });
       } catch {
@@ -349,7 +364,8 @@ function sender(tabId) {
  * Run `fn` with the debugger attached to a tab. The tab is released again
  * after `settings.idleSeconds` without any further requests.
  */
-async function useAttached(tab, fn) {
+async function useAttached(tab, fn, client) {
+  setTabClient(tab.id, client);
   markBusy(tab.id);
   let keepAlive = null;
   try {
@@ -366,7 +382,7 @@ async function useAttached(tab, fn) {
 }
 
 async function useTab(params, fn) {
-  return useAttached(await resolveTab(params.tabId), fn);
+  return useAttached(await resolveTab(params.tabId), fn, params.client);
 }
 
 /** Common result: what happened, where we are now, and (optionally) a fresh snapshot. */
@@ -407,20 +423,21 @@ const handlers = {
     };
   },
 
-  async open_tab({ url, background = false, snapshot = true }) {
+  async open_tab({ url, background = false, snapshot = true, client }) {
     if (!settings.allowOpenTabs) {
       throw new Error('The user turned off "Let AI open new tabs" in Claude Connector. Ask them to share a tab instead.');
     }
     const href = actions.normalizeUrl(url);
     checkAllowed(href);
     const created = await chrome.tabs.create({ url: 'about:blank', active: !background });
+    setTabClient(created.id, client); // before grouping, so a new group gets the right title
     await setShared(created.id, true);
     lastTabId = created.id;
     await persist();
     return useAttached(created, async ({ tab, send }) => {
       const message = await actions.navigate(send, { url: href });
       return finish(tab.id, send, `Opened a new tab (id ${tab.id}). ${message}`, snapshot);
-    });
+    }, client);
   },
 
   navigate: (params) =>
@@ -534,6 +551,7 @@ async function setShared(tabId, on) {
     await releaseTab(tabId);
     await ungroupTab(tabId);
     lastCursor.delete(tabId);
+    tabClient.delete(tabId);
     if (lastTabId === tabId) lastTabId = null;
   }
   await persist();
@@ -625,6 +643,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   attached.delete(tabId);
   busy.delete(tabId);
   lastCursor.delete(tabId);
+  tabClient.delete(tabId);
   if (groupedByUs.delete(tabId)) persist();
   clearTimeout(idleTimers.get(tabId));
   idleTimers.delete(tabId);

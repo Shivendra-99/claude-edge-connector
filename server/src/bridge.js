@@ -98,7 +98,8 @@ export class Bridge {
 
   // -------------------------------------------------------------------------
 
-  #call(socket, method, params, timeoutMs) {
+  /** `client` is the AI app the request comes from; the extension shows it on the page and tab group. */
+  #call(socket, method, params, timeoutMs, client = this.clientName) {
     const id = this.nextId++;
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
@@ -106,7 +107,7 @@ export class Bridge {
         reject(new Error(`The browser did not answer within ${Math.round(timeoutMs / 1000)}s (${method}).`));
       }, timeoutMs);
       this.pending.set(id, { resolve, reject, timer, socket });
-      this.#send(socket, { type: 'request', id, method, params });
+      this.#send(socket, { type: 'request', id, method, params, client });
     });
   }
 
@@ -249,7 +250,8 @@ export class Bridge {
       if (msg.type !== 'request') return;
       try {
         if (!this.extension) throw new Error(NOT_CONNECTED);
-        const result = await this.#call(this.extension, msg.method, msg.params, msg.timeoutMs || 60000);
+        const client = this.peers.get(ws) || msg.client || null;
+        const result = await this.#call(this.extension, msg.method, msg.params, msg.timeoutMs || 60000, client);
         this.#send(ws, { type: 'response', id: msg.id, result });
       } catch (e) {
         this.#send(ws, { type: 'response', id: msg.id, error: { message: e.message } });

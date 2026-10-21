@@ -1,6 +1,6 @@
 // The on-page overlay shown while the AI is working in a tab: a soft glow
 // around the page, an animated cursor that moves to where the AI clicks or
-// types, and a "Claude is working" pill with a Stop button.
+// types, and a "<AI app> is working" pill with a Stop button.
 //
 // It lives in a closed shadow root on <html>, ignores pointer events (except
 // the pill), sits in the browser's top layer above dialogs, and builds its
@@ -96,9 +96,10 @@ function overlayInPage(cmd) {
       e.stopPropagation();
       if (typeof window[cmd.binding] === 'function') window[cmd.binding]('stop');
     });
-    pill.append(el('span', 'dot'), el('span', 'label', cmd.label || 'Claude is working in this tab'), stop);
+    const label = el('span', 'label');
+    pill.append(el('span', 'dot'), label, stop);
     root.append(glow, cursor, pill);
-    host.__cec = { root, cursor, pill };
+    host.__cec = { root, cursor, pill, label };
     document.documentElement.append(host);
     // Start the cursor where it last was (it survives page navigations).
     const start = cmd.cursor || { x: innerWidth / 2, y: innerHeight / 2 };
@@ -124,7 +125,10 @@ function overlayInPage(cmd) {
   clearTimeout(host.__cecTtl);
   host.__cecTtl = setTimeout(() => host.remove(), cmd.ttlMs || 35000);
 
-  const { root, cursor, pill } = host.__cec;
+  const { root, cursor, pill, label } = host.__cec;
+  // Name the AI app that is acting now (another app may take over the same tab).
+  const text = cmd.label || 'AI is working in this tab';
+  if (label.textContent !== text) label.textContent = text;
   if (cmd.op === 'move') {
     cursor.style.transform = `translate(${cmd.x}px, ${cmd.y}px)`;
     host.dataset.x = String(Math.round(cmd.x));

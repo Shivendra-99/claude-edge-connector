@@ -209,7 +209,7 @@ const tabInfo = (tabId) =>
   }, tabId);
 const openedId = (out) => Number(out.match(/tab \(id (\d+)\)/)[1]);
 
-test('AI tabs go into an orange "Claude" group that shows when Claude is working', { skip }, async () => {
+test('AI tabs go into an orange group named after the AI app, showing when it is working', { skip }, async () => {
   await popup({ cmd: 'stopAll' }); // tabs from earlier tests would share the group
   await popup({ cmd: 'saveSettings', settings: { idleSeconds: 2 } });
   const tabId = openedId(text(await call('browser_open_tab', { url: `${site.url}/form.html?t=group`, snapshot: false })));
@@ -217,11 +217,11 @@ test('AI tabs go into an orange "Claude" group that shows when Claude is working
   let info = await tabInfo(tabId);
   assert.notEqual(info.groupId, -1, 'grouped');
   assert.equal(info.color, 'orange');
-  assert.equal(info.title, 'Claude · working');
+  assert.equal(info.title, 'Claude Code · working');
 
   await sleep(3000);
   info = await tabInfo(tabId);
-  assert.equal(info.title, 'Claude', 'back to plain "Claude" once idle');
+  assert.equal(info.title, 'Claude Code', 'back to just the app name once idle');
 
   // A second AI tab joins the same group.
   const second = openedId(text(await call('browser_open_tab', { url: `${site.url}/page2.html?t=group2`, snapshot: false })));
@@ -251,8 +251,8 @@ test('the page shows a glow, a cursor that follows clicks, and hides them from t
   const tabId = openedId(opened);
   const page = await pageFor('t=overlay');
   assert.ok(await overlayOn(page), 'overlay shown while working');
-  assert.doesNotMatch(opened, /Claude is working/, 'overlay is not in the snapshot');
-  assert.doesNotMatch(text(await call('browser_get_text', { tab_id: tabId })), /Claude is working/);
+  assert.doesNotMatch(opened, /is working in this tab/, 'overlay is not in the snapshot');
+  assert.doesNotMatch(text(await call('browser_get_text', { tab_id: tabId })), /is working in this tab/);
 
   const ref = refFor(opened, /button "Place order"/);
   await call('browser_click', { tab_id: tabId, ref, snapshot: false });
@@ -274,7 +274,7 @@ test('the page shows a glow, a cursor that follows clicks, and hides them from t
   assert.ok(await overlayOn(await pageFor('page2.html?t=overlay')));
 
   await sleep(3000);
-  assert.equal(await overlayOn(await pageFor('page2.html?t=overlay')), null, 'removed once Claude goes idle');
+  assert.equal(await overlayOn(await pageFor('page2.html?t=overlay')), null, 'removed once the AI goes idle');
   await popup({ cmd: 'setShared', tabId, on: false });
   await popup({ cmd: 'saveSettings', settings: { idleSeconds: 30 } });
 });
