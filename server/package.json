@@ -1,6 +1,6 @@
 {
   "name": "claude-edge-connector",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "MCP server for Claude Connector: let Claude and other MCP clients control the Microsoft Edge tabs you share.",
   "keywords": [
     "mcp",

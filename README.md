@@ -30,8 +30,14 @@ You need Microsoft Edge and [Node.js](https://nodejs.org) 18.20 or newer.
 
 ### 1. Install the extension
 
-- **From Edge Add-ons:** *(link goes here once it's published)*
-- **From source:** download this repo, open `edge://extensions`, turn on **Developer mode**, click **Load unpacked** and pick the `extension` folder.
+- **From Edge Add-ons (recommended):** [**Get Claude Connector for Edge**](https://microsoftedge.microsoft.com/addons/detail/claude-connector-for-edge/ljllimlbebgjmknelmbfddoejjbblkii) and click **Get**. Edge keeps it updated.
+- **From a GitHub release:**
+  1. Download `claude-edge-connector-<version>.zip` from the [latest release](https://github.com/Shivendra-99/claude-edge-connector/releases/latest) and unzip it into its own folder. Keep that folder; Edge loads the extension from it.
+  2. Open `edge://extensions` and turn on **Developer mode** (bottom left).
+  3. Click **Load unpacked** and pick the unzipped folder (the one with `manifest.json` in it).
+
+  To update, unzip the new release over the same folder and click **Reload** on the extension card.
+- **From source:** download this repo and follow the same steps, picking the `extension` folder.
 
 ### 2. Add the server to your AI app
 
@@ -137,7 +143,7 @@ An AI that can click around in your logged-in browser is powerful, so Claude Con
 - **Opt-in per tab.** The AI can only see and control tabs you've shared, plus tabs it opened itself (you can turn that off).
 - **Blocked sites.** List domains (your bank, your work email) that Claude Connector will never touch, even if a tab is shared.
 - **Always visible.** Edge shows its debugging bar whenever the AI is acting in a tab, and pressing **Cancel** there revokes everything. The extension lets go of a tab 30 seconds after the AI's last action, so the bar isn't left up while nothing is happening.
-- **Local only.** The server listens on `127.0.0.1` and refuses connections from web pages (it checks `Origin` and `Host`, so DNS-rebinding tricks don't work either). Set `EDGE_CONNECTOR_EXTENSION_IDS` to allow only the official extension id.
+- **Local only.** The server listens on `127.0.0.1` and refuses connections from web pages (it checks `Origin` and `Host`, so DNS-rebinding tricks don't work either). Set `EDGE_CONNECTOR_EXTENSION_IDS=ljllimlbebgjmknelmbfddoejjbblkii` to allow only the official Edge Add-ons extension (an unpacked copy gets a different id).
 - **No telemetry.** Claude Connector itself sends nothing anywhere. Page content goes only to the AI app you connected, which sends it to its model. See [PRIVACY.md](PRIVACY.md).
 - **Passwords are masked** in snapshots.
 - **Prompt injection is real.** Web pages can contain text written to trick AI agents. Claude Connector labels all page content as untrusted and tells the model to confirm with you before payments, messages, deletions or account changes, but no AI is immune. Keep sensitive sites on the blocked list and watch what the agent does.
