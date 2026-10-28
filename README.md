@@ -30,14 +30,24 @@ You need Microsoft Edge and [Node.js](https://nodejs.org) 18.20 or newer.
 
 ### 1. Install the extension
 
-- **From Edge Add-ons (recommended):** [**Get Claude Connector for Edge**](https://microsoftedge.microsoft.com/addons/detail/claude-connector-for-edge/ljllimlbebgjmknelmbfddoejjbblkii) and click **Get**. Edge keeps it updated.
-- **From a GitHub release:**
-  1. Download `claude-edge-connector-<version>.zip` from the [latest release](https://github.com/Shivendra-99/claude-edge-connector/releases/latest) and unzip it into its own folder. Keep that folder; Edge loads the extension from it.
-  2. Open `edge://extensions` and turn on **Developer mode** (bottom left).
-  3. Click **Load unpacked** and pick the unzipped folder (the one with `manifest.json` in it).
+Pick **one** option.
 
-  To update, unzip the new release over the same folder and click **Reload** on the extension card.
-- **From source:** download this repo and follow the same steps, picking the `extension` folder.
+**Option A: Edge Add-ons store (recommended, no Developer mode)**
+
+1. Open [**Claude Connector for Edge** on Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/claude-connector-for-edge/ljllimlbebgjmknelmbfddoejjbblkii).
+2. Click **Get**, then **Add extension**.
+
+That's it. Edge updates it automatically.
+
+**Option B: Manual install (needs Developer mode)**
+
+Only if you can't use the store, or want a build that isn't in the store yet.
+
+1. Download `claude-edge-connector-<version>.zip` from the [latest release](https://github.com/Shivendra-99/claude-edge-connector/releases/latest) and unzip it into its own folder. Keep that folder; Edge loads the extension from it. (Or clone this repo and use its `extension` folder.)
+2. Open `edge://extensions` and turn on **Developer mode** (bottom left).
+3. Click **Load unpacked** and pick the folder with `manifest.json` in it.
+
+To update, unzip the new release over the same folder and click **Reload** on the extension card.
 
 ### 2. Add the server to your AI app
 
